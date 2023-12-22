@@ -7,7 +7,8 @@ import { redirect } from "next/navigation";
 const Page = async () => {
   const { userId: clerkId } = auth();
   const user = await getUserByClrekId(clerkId!);
-  if (!user.admin) redirect("/");
+
+  if (!user.admin || !user) redirect("/");
   return (
     <div className=" pt-24 pl-5 ">
       <GenCodeBtn />
