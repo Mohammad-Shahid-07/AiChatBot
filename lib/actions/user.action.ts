@@ -5,8 +5,8 @@ import User from "../model/user.model";
 import { connectToDatabase } from "../mongo";
 
 import { newCodeGenerator } from "../utils";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+
+import { auth, currentUser } from "@clerk/nextjs";
 
 export async function createUserWithProvider(params: any) {
   try {
@@ -32,10 +32,10 @@ export async function createUserWithProvider(params: any) {
   }
 }
 
-export async function getUserByEmail(email?: string) {
+export async function getUserByClrekId(clerkId?: string) {
   try {
     connectToDatabase();
-    const user = await User.findOne({ email });
+    const user = await User.findOne({ clerkId });
     if (user) {
       return user;
     } else {
@@ -96,29 +96,45 @@ export async function checkCode(code: string) {
   try {
     await connectToDatabase();
 
-    const userSession = await getServerSession(authOptions);
+    const { userId } = auth();
 
-    if (!userSession) {
-      console.error("User session not available.");
-      return false;
+    if (!userId) {
+      throw new Error("User session not available.");
     }
 
-    const email = userSession?.user?.email;
+    // Check if user already exists
+    let user = await User.findOne({ clerkId: userId });
+
+    if (!user) {
+      const currentUserInfo = await currentUser();
+
+      user = await new User({
+        clerkId: userId,
+        name: `${currentUserInfo?.firstName} ${currentUserInfo?.lastName}`,
+        email: currentUserInfo?.emailAddresses[0]?.emailAddress,
+        image: currentUserInfo?.imageUrl,
+      }).save();
+    }
 
     const isUsed = await Codes.findOne({ code });
 
-    if (isUsed && isUsed.used) {
+    if (isUsed?.used) {
       console.log("Code is already used.");
       return false;
     } else {
-      await User.findOneAndUpdate({ email }, { $set: { code } });
+      // Use findOneAndUpdate with upsert for user creation or update
+      await User.findOneAndUpdate(
+        { clerkId: userId },
+        { $set: { code } },
+        { upsert: true },
+      );
       await Codes.findOneAndUpdate({ code }, { $set: { used: true } });
 
       console.log("Code marked as used and associated with the user.");
       return true;
     }
-  } catch (error) {
-    console.error("Error in checkCode:", error);
+  } catch (error: any) {
+    console.error("Error in checkCode:", error.message || error);
     // Handle the error accordingly
     throw error;
   }

@@ -1,15 +1,11 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import ProfileMenu from "./ProfileMenu";
 import SigninButton from "./SigninButton";
-
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { UserButton, auth } from "@clerk/nextjs";
 
 const Navbar = async () => {
-  const userSession = await getServerSession(authOptions);
-
+  const { userId } = auth();
   return (
     <nav className="flex justify-between background-light900_dark200 fixed z-50 w-full gap-5 p-6 shadow-light-300 dark:shadow-none sm:px-12 ">
       <Link href="/" className="flex items-center gap-1">
@@ -24,11 +20,7 @@ const Navbar = async () => {
       </Link>
 
       <div className="flex justify-between gap-5">
-        {userSession?.user ? (
-          <ProfileMenu user={JSON.stringify(userSession?.user)} />
-        ) : (
-          <SigninButton />
-        )}
+        {userId ? <UserButton afterSignOutUrl="/" /> : <SigninButton />}
       </div>
     </nav>
   );
