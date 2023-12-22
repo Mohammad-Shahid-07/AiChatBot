@@ -1,16 +1,17 @@
 import { CodeModal } from "@/components/CodeModal";
 import SpeakUi from "@/components/SpeakUi";
 import { getUserByEmail } from "@/lib/actions/user.action";
-import { getUserSession } from "@/lib/session";
+import { getServerSession } from "next-auth";
 import Link from "next/link";
 
 import { redirect } from "next/navigation";
 import React from "react";
+import { authOptions } from "../api/auth/[...nextauth]/route";
 
 const Page = async () => {
-  const user = await getUserSession();
-  if (!user) redirect("/api/auth/signin");
-  const mongoUser = await getUserByEmail(user?.email!);
+  const userSession = await getServerSession(authOptions);
+  if (!userSession) redirect("/api/auth/signin");
+  const mongoUser = await getUserByEmail(userSession?.user?.email!);
   const code = mongoUser?.code;
 
   return (
@@ -27,7 +28,7 @@ const Page = async () => {
         <CodeModal />
       </div>
       <div className="flex flex-col items-center justify-center min-h-screen py-2 ">
-        <SpeakUi user={JSON.stringify(user)} code={code} />
+        <SpeakUi user={JSON.stringify(userSession?.user)} code={code} />
       </div>
     </>
   );

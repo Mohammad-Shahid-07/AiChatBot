@@ -3,22 +3,21 @@ import { revalidatePath } from "next/cache";
 import Codes from "../model/codes.model";
 import User from "../model/user.model";
 import { connectToDatabase } from "../mongo";
-import { getUserSession } from "../session";
+
 import { newCodeGenerator } from "../utils";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 export async function createUserWithProvider(params: any) {
   try {
     connectToDatabase();
     const { user } = params;
-    // Check if the user already exists
+
     const existingUser = await User.findOne({
       email: user.email,
     });
     if (existingUser) {
-      // User exists, update the accounts array
       return;
-
-      // Check if the user has a username
     } else {
       const newUser = new User({
         name: user.name,
@@ -97,14 +96,14 @@ export async function checkCode(code: string) {
   try {
     await connectToDatabase();
 
-    const userSession = await getUserSession();
+    const userSession = await getServerSession(authOptions);
 
     if (!userSession) {
       console.error("User session not available.");
       return false;
     }
 
-    const email = userSession.email;
+    const email = userSession?.user?.email;
 
     const isUsed = await Codes.findOne({ code });
 

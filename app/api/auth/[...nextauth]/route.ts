@@ -1,14 +1,10 @@
 import GoogleProvider from "next-auth/providers/google";
 import { NextAuthOptions } from "next-auth";
-
 import { createUserWithProvider } from "@/lib/actions/user.action";
 import NextAuth from "next-auth/next";
 import User from "@/lib/model/user.model";
 
-export interface CredentialsProps {
-  email: string;
-  password: string;
-}
+
 export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({

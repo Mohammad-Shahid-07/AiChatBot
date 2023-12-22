@@ -1,13 +1,14 @@
-
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import ProfileMenu from "./ProfileMenu";
 import SigninButton from "./SigninButton";
-import { getUserSession } from "@/lib/session";
+
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 
 const Navbar = async () => {
-  const user = await getUserSession();
+  const userSession = await getServerSession(authOptions);
 
   return (
     <nav className="flex justify-between background-light900_dark200 fixed z-50 w-full gap-5 p-6 shadow-light-300 dark:shadow-none sm:px-12 ">
@@ -23,8 +24,8 @@ const Navbar = async () => {
       </Link>
 
       <div className="flex justify-between gap-5">
-        {user ? (
-          <ProfileMenu user={JSON.stringify(user)} />
+        {userSession?.user ? (
+          <ProfileMenu user={JSON.stringify(userSession?.user)} />
         ) : (
           <SigninButton />
         )}
