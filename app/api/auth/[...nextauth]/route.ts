@@ -1,4 +1,5 @@
 import { createUserWithProvider } from "@/lib/actions/user.action";
+import User from "@/lib/model/user.model";
 import { NextAuthOptions } from "next-auth";
 import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
@@ -29,6 +30,23 @@ const authOptions: NextAuthOptions = {
         console.log(error);
         return false;
       }
+    },
+    session: async ({ session }) => {
+      const user = await User.findOne({ email: session?.user?.email });
+      if (!user) {
+        return session;
+      }
+      session.user = {
+        ...(session.user as {
+          name?: string;
+          email?: string;
+          image?: string;
+          id?: string;
+        }),
+        id: user._id.toString(),
+      };
+
+      return session;
     },
   },
   secret: process.env.AUTH_SECRET,
