@@ -21,10 +21,15 @@ const Page = async () => {
             Generate More Codes
           </Link>
         )}
-        {!mongoUser?.code && <CodeModal />}
       </div>
-      <div className="flex flex-col items-center justify-center min-h-screen py-2 ">
-        <SpeakUi user={JSON.stringify(mongoUser?._id)} code={mongoUser?.code} />
+      <div className="flex flex-col items-center justify-center min-h-[85vh] py-2 ">
+        {!mongoUser?.code && <CodeModal />}
+        {mongoUser?.code && (
+          <SpeakUi
+            user={JSON.stringify(mongoUser?._id)}
+            code={mongoUser?.code}
+          />
+        )}
       </div>
     </>
   );

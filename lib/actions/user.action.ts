@@ -92,9 +92,15 @@ export async function generatesCodes(pathname: string) {
   }
 }
 
-export async function checkCode(code: string) {
+interface CheckCodeParams {
+  code: string;
+  pathname: string;
+}
+
+export async function checkCode(params: CheckCodeParams) {
   try {
     await connectToDatabase();
+    const { code, pathname } = params;
 
     const { userId } = auth();
 
@@ -118,7 +124,7 @@ export async function checkCode(code: string) {
 
     const isUsed = await Codes.findOne({ code });
 
-    if (isUsed?.used) {
+    if (isUsed?.used || !isUsed) {
       console.log("Code is already used.");
       return false;
     } else {
@@ -131,6 +137,7 @@ export async function checkCode(code: string) {
       await Codes.findOneAndUpdate({ code }, { $set: { used: true } });
 
       console.log("Code marked as used and associated with the user.");
+      revalidatePath(pathname);
       return true;
     }
   } catch (error: any) {

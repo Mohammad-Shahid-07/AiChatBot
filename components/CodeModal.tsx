@@ -15,8 +15,12 @@ import { checkCode } from "@/lib/actions/user.action";
 
 import { useState } from "react";
 import { toast } from "./ui/use-toast";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import Image from "next/image";
 
 export function CodeModal() {
+  const pathname = usePathname();
   const [code, setCode] = useState("");
   const handleSubmit = async (e: any) => {
     try {
@@ -27,7 +31,7 @@ export function CodeModal() {
           description: "Please enter a code",
           variant: "destructive",
         });
-      const res = await checkCode(code);
+      const res = await checkCode({ code, pathname });
 
       if (res) {
         toast({
@@ -48,9 +52,12 @@ export function CodeModal() {
   return (
     <Dialog>
       <DialogTrigger asChild>
-        <Button className=" text-green-500 m-5">
-          Enter Code
-        </Button>
+        <div
+          className={`text-4xl font-black text-white flex min-h-[10rem] min-w-[10rem] md:h-40 md:w-40 lg:h-52 lg:w-52 
+     cursor-pointer items-center justify-center rounded-full border-2 shadow-xl transition-all hover:scale-105 dark:shadow-dark-200`}
+        >
+          Speak
+        </div>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px] bg-gray-600/5">
         <DialogHeader>
@@ -74,13 +81,26 @@ export function CodeModal() {
                 onChange={(e) => setCode(e.target.value)}
               />
             </div>
-            <DialogFooter>
-              <Button type="submit" className="mt-5">
-                Add code
-              </Button>
-            </DialogFooter>
+            <Button type="submit" className="mt-5 block mx-auto ">
+              Add code
+            </Button>
           </form>
         </div>
+        <DialogFooter className="text-white ">
+          <span>If you don&rsquo;t have a code, please contact the admin.</span>
+
+          <Link
+            href="https://www.linkedin.com/in/mohammad-07-shahid/"
+            target="_blank"
+          >
+            <Image
+              src="/assets/icons/linkedin.svg"
+              alt="linkedin"
+              width={30}
+              height={30}
+            />
+          </Link>
+        </DialogFooter>
       </DialogContent>
     </Dialog>
   );
