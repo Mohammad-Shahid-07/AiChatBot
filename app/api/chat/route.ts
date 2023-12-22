@@ -5,7 +5,7 @@ export async function POST(req: NextRequest) {
   try {
     const { message, user } = await req.json();
     const userId = JSON.parse(user);
-
+   
     // Retrieve chat history from the database
     const chatHistory = await getChat({ userId });
 

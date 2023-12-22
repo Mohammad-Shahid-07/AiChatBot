@@ -6,17 +6,15 @@ export interface IUser extends Document {
   image?: string;
   joinedAt: Date;
   code: string;
+  admin: boolean;
 }
 
 const UserSchema = new Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true },
   image: { type: String },
-  code: {
-    type: Schema.Types.ObjectId,
-    ref: "Codes",
-    unique: true,
-  },
+  code: String,
+  admin: { type: Boolean, default: undefined },
   joinedAt: { type: Date, default: Date.now },
 });
 

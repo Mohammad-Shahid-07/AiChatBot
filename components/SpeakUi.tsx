@@ -18,7 +18,7 @@ import { deleteChat } from "@/lib/actions/chat.action";
 
 type Chats = { role: string; content: string }[];
 
-const SpeakUi = ({ user }: { user: string }) => {
+const SpeakUi = ({ user, code }: { user: string; code?: string }) => {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [isListening, setIsListening] = useState(false);
   const [message, setMessage] = useState("");
@@ -48,13 +48,17 @@ const SpeakUi = ({ user }: { user: string }) => {
     typeof window !== "undefined"
       ? new (window as any).webkitSpeechRecognition()
       : null;
-  console.log(voice);
 
   const startVoiceRecognition = () => {
     recognition.lang = "en-US"; // Correct language code
     recognition.continuous = true;
     recognition.interimResults = false;
     recognition.maxAlternatives = 1;
+    if (!code)
+      return toast({
+        title: "Please Enter a Code to use the app.",
+        variant: "destructive",
+      });
     recognition.onstart = () => {
       setIsListening(true);
     };

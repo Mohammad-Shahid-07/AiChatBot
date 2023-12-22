@@ -1,12 +1,13 @@
-import { auth } from "@/lib/auth";
+
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
 import ProfileMenu from "./ProfileMenu";
 import SigninButton from "./SigninButton";
+import { getUserSession } from "@/lib/session";
 
 const Navbar = async () => {
-  const session = await auth();
+  const user = await getUserSession();
 
   return (
     <nav className="flex justify-between background-light900_dark200 fixed z-50 w-full gap-5 p-6 shadow-light-300 dark:shadow-none sm:px-12 ">
@@ -22,8 +23,8 @@ const Navbar = async () => {
       </Link>
 
       <div className="flex justify-between gap-5">
-        {session?.user ? (
-          <ProfileMenu user={JSON.stringify(session?.user)} />
+        {user ? (
+          <ProfileMenu user={JSON.stringify(user)} />
         ) : (
           <SigninButton />
         )}

@@ -7,8 +7,7 @@ import Chat from "../model/chat.model";
 export async function getChat({ userId }: GetChatParams) {
   try {
     connectToDatabase();
-
-    
+  
     const chat = await Chat.findOne({ userId });
     if (!chat) {
       return [];

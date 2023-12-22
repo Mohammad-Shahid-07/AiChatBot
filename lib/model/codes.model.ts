@@ -1,14 +1,14 @@
 import { Schema, models, model, Document } from "mongoose";
 
 export interface ICode extends Document {
-  userId: Schema.Types.ObjectId;
+  used: boolean;
   createdAt: Date;
-  uniqueCode: string;
+  code: string;
 }
 
 const CodesSchema = new Schema({
-  uniqueCode: { type: String, unique: true },
-  userId: { type: Schema.Types.ObjectId, ref: "User" },
+  code: { type: String, unique: true },
+  used: { type: Boolean, default: false },
   createdAt: { type: Date, default: Date.now },
 });
 

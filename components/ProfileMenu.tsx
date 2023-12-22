@@ -7,15 +7,15 @@ import {
   MenubarSeparator,
   MenubarTrigger,
 } from "@/components/ui/menubar";
-
 import { signOut } from "next-auth/react";
 
 import Image from "next/image";
 import Link from "next/link";
 
 const ProfileMenu = ({ user }: { user: string }) => {
-  
   const mongoUser = JSON.parse(user);
+
+  
   return (
     <Menubar className="relative border-none bg-transparent shadow-none">
       <MenubarMenu>
@@ -49,7 +49,17 @@ const ProfileMenu = ({ user }: { user: string }) => {
             </div>
           </MenubarItem>
           <MenubarSeparator />
-    
+          {mongoUser.admin && (
+            <MenubarItem className="text-dark500_light700 focus:bg-light-400/5 ">
+              <Link
+                href="/gen"
+                className="inline-flex  items-center gap-5  py-3 text-sm "
+              >
+                <span>Generate New Codes</span>
+              </Link>
+            </MenubarItem>
+          )}
+
           <MenubarItem className="text-dark500_light700 focus:bg-light-400/5 ">
             <button
               className="inline-flex  items-center gap-5  py-3 text-sm "
