@@ -1,10 +1,15 @@
-import { createUserWithProvider } from "@/lib/actions/user.action";
-import User from "@/lib/model/user.model";
-import { NextAuthOptions } from "next-auth";
-import NextAuth from "next-auth/next";
 import GoogleProvider from "next-auth/providers/google";
+import { NextAuthOptions } from "next-auth";
 
-const authOptions: NextAuthOptions = {
+import { createUserWithProvider } from "@/lib/actions/user.action";
+import NextAuth from "next-auth/next";
+import User from "@/lib/model/user.model";
+
+export interface CredentialsProps {
+  email: string;
+  password: string;
+}
+export const authOptions: NextAuthOptions = {
   providers: [
     GoogleProvider({
       clientId: process.env.GOOGLE_CLIENT_ID!,
@@ -12,17 +17,21 @@ const authOptions: NextAuthOptions = {
     }),
   ],
   callbacks: {
-    async signIn({ profile }) {
-      if (!profile?.email) {
-        throw new Error("No email found");
+    async jwt({ token, user, trigger, session }) {
+      if (trigger === "update") {
+        return { ...token, ...session.user };
       }
+      return { ...token, ...user };
+    },
+    async signIn(user) {
       try {
         await createUserWithProvider({
           user: {
-            name: profile?.name!,
-            email: profile?.email!,
-            image: profile?.image!,
+            name: user?.user?.name!,
+            email: user?.user?.email!,
+            image: user?.user?.image!,
           },
+          account: user.account,
         });
 
         return true;
@@ -53,4 +62,4 @@ const authOptions: NextAuthOptions = {
 };
 
 const handler = NextAuth(authOptions);
-export { handler as GET, handler as POST, authOptions };
+export { handler as GET, handler as POST };
