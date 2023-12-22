@@ -1,7 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
-import SigninButton from "./SigninButton";
 import { UserButton, auth } from "@clerk/nextjs";
 
 const Navbar = async () => {
@@ -20,7 +19,13 @@ const Navbar = async () => {
       </Link>
 
       <div className="flex justify-between gap-5">
-        {userId ? <UserButton afterSignOutUrl="/" /> : <SigninButton />}
+        {userId ? (
+          <UserButton afterSignOutUrl="/" />
+        ) : (
+          <Link href={"/sign-in"} className="p-3 bg-slate-400 rounded-sm">
+            Sign-In{" "}
+          </Link>
+        )}
       </div>
     </nav>
   );
