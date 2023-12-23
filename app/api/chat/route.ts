@@ -5,21 +5,21 @@ export async function POST(req: NextRequest) {
   try {
     const { message, user } = await req.json();
     const userId = JSON.parse(user);
-   
+
     // Retrieve chat history from the database
     const chatHistory = await getChat({ userId });
 
     const apiKey = process.env.PERPEX_API;
 
     // Make the API call to Perplexity.ai
-    const response = await fetch("https://api.perplexity.ai/chat/completions", {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Authorization: `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        model: "pplx-70b-chat",
+        model: "gpt-3.5-turbo",
         messages: [
           {
             role: "system",
@@ -30,11 +30,15 @@ export async function POST(req: NextRequest) {
             content:
               "you name is Chat Buddy, you are created by mohammad Shahid. You are only to answer with most short answers. ",
           },
-          ...chatHistory,
+          ...chatHistory.map((chat: any) => ({
+            role: chat.role,
+            content: chat.content,
+          })),
           { role: "user", content: message },
         ],
       }),
     });
+    console.log(response);
 
     if (!response.ok) {
       throw new Error(`Failed to fetch: ${response.statusText}`);
