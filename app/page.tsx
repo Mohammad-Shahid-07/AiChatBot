@@ -8,7 +8,7 @@ export default async function Home() {
       <h1 className="md:text-5xl text-3xl  font-black ">
         <span className="gradient-text-1"> Chat With</span>{" "}
         <span className="gradient-text-2">AI</span>{" "}
-        <span className="gradient-text-1"> Your Friend</span>
+        <span className="gradient-text-1">, Your Friend</span>
       </h1>
       <Link
         href="/chat"
