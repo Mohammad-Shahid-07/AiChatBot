@@ -1,6 +1,8 @@
 import { createUpdateChats, getChat } from "@/lib/actions/chat.action";
 import { NextRequest } from "next/server";
-
+function delay(ms : number) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
 export async function POST(req: NextRequest) {
   try {
     const { message, user } = await req.json();
@@ -10,7 +12,7 @@ export async function POST(req: NextRequest) {
     const chatHistory = await getChat({ userId });
 
     const apiKey = process.env.PERPEX_API;
-
+    await delay(1000); // Adjust the delay time as needed
     // Make the API call to Perplexity.ai
     const response = await fetch("https://api.openai.com/v1/chat/completions", {
       method: "POST",
